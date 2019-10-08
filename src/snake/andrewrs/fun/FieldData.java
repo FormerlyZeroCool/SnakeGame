@@ -11,17 +11,17 @@ public class FieldData extends ArrayList<FieldCell>{
 	private static final long serialVersionUID = 4L;
 	private PlayingScreen screen;
 	
-	public FieldData(PlayingScreen screen) //dim must be a perfect square
+	public FieldData(PlayingScreen screen) 
 	{
 		super();
 		this.screen = screen;
-		int dim = this.screen.getSquareDim();
-		for(int i = 0; i < dim*dim;i++)
+		int dim = this.screen.width*this.screen.height;
+		for(int i = 0; i < dim;i++)
 		{
-			this.add(new FieldCell(screen,i % dim,i / dim));
+			this.add(new FieldCell(screen,i % screen.width,i / screen.width));
 		}
 
-		for(FieldCell cell : this)
+		for(FieldCell cell : this)//Builds graph data structure
 			this.connectNeighbors(cell);
 	}
 	public void connectNeighbors(FieldCell cell)
@@ -38,6 +38,16 @@ public class FieldData extends ArrayList<FieldCell>{
 	public int getSqareDim()
 	{
 		return screen.getSquareDim();
+	}
+
+	public int getWidth()
+	{
+		return screen.width;
+	}
+
+	public int getHeight()
+	{
+		return screen.height;
 	}
 	
 	public void setFoodHere(FieldCell cell, boolean value) 
@@ -60,10 +70,10 @@ public class FieldData extends ArrayList<FieldCell>{
 	public FieldCell get(int x, int y) 
 	{
 		boolean isValidCell = true;
-		if(y < 0 || y >=screen.getSquareDim() || x < 0 || x >= screen.getSquareDim())
+		if(y < 0 || y >=screen.height || x < 0 || x >= screen.width)
 			isValidCell = false;
 			
-		return isValidCell?super.get(x + y * screen.getSquareDim()):null;
+		return isValidCell?super.get(x + y * screen.width):null;
 	}
 
 }

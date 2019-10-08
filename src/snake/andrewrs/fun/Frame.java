@@ -15,7 +15,7 @@ public class Frame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private PlayingScreen screen;
-	private long sleepTime = 20;
+	private long sleepTime = 4;
 	
 	public Frame() 
 	{
@@ -74,13 +74,28 @@ public class Frame extends JFrame {
 					if(sleepTime>20)
 						sleepTime-=10;
 				}
-				else if(e.getKeyCode() == KeyEvent.VK_S)
+				else if(e.getKeyCode() == KeyEvent.VK_1)
 				{
-					screen.setDijkstra(false);
+					screen.setDijkstra('1');
+				}
+				
+				else if(e.getKeyCode() == KeyEvent.VK_2)
+				{
+					screen.setDijkstra('2');
+				}
+				
+				else if(e.getKeyCode() == KeyEvent.VK_3)
+				{
+					screen.setDijkstra('3');
+				}
+				
+				else if(e.getKeyCode() == KeyEvent.VK_4)
+				{
+					screen.setDijkstra('4');
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_D)
 				{
-					screen.setDijkstra(true);
+					screen.setDijkstra('d');
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_B)
 				{

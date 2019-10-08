@@ -41,7 +41,7 @@ public class Point extends Object{
 	@Override
 	public int hashCode()
 	{
-		return (x+1000000) * (y+100);
+		return (x+1000000) * (y+1);
 	}
 	@Override
 	public boolean equals(Object p)

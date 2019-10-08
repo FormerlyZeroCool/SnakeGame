@@ -16,11 +16,13 @@ public class DataLoader {
 		String dataArr[] = data.split("\\},\\{");
 		dataArr[0] = dataArr[0].substring(1);
 		dataArr[dataArr.length-1] = dataArr[dataArr.length-1].substring(0,dataArr[dataArr.length-1].length()-2);
-		int counter = 0;
-		for(FieldCell cell : field)
+		
+		for(int counter = 0;counter < field.size() && counter < dataArr.length;counter++)
 		{
+			FieldCell cell = field.get(counter);
 			String current = dataArr[counter];
 			current = '{' + current + '}';
+			System.out.println(current);
 			JsonObject objDat = new JsonObjectification(current).jsonObject;
 			cell.setSnakeHere(objDat.getChild("isSnakeHere").getData().equals("true"));
 			cell.setObstructionHere(objDat.getChild("isObstructionHere").getData().equals("true"));
@@ -31,7 +33,6 @@ public class DataLoader {
 			}
 			counter++;
 		}
-		food.toString();
 	}
 	
 	public void load(PlayingScreen screen,String data) 

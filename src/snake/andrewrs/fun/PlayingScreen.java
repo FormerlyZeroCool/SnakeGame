@@ -6,11 +6,10 @@ import java.util.Random;
 
 import javax.swing.JPanel;
 
-import com.andrewrs.jsonparser.JsonObjectification;
 
 import mazesolvers.andrewrs.fun.Direction;
 import mazesolvers.andrewrs.fun.Node;
-import mazesolvers.andrewrs.fun.Tree;
+import mazesolvers.andrewrs.fun.Mapper;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -28,14 +27,15 @@ public class PlayingScreen extends JPanel {
 	 */
 	private static final long serialVersionUID = 2L;
 
-	private final int width = 70;
-	private final int height = width;
+	public final int width = 120;
+	public final int height = 150;
 	private FieldData field;
 	private Snake snake = new Snake(width, height);
 	private Food food;
 	private GameStatePrinter statePrinter;
-	private boolean autoPlay = false,showHeatMap = false,showPredictedPath = false,liveUpdatePath = true,
-			isDijkstra = true,drawingBorders = false,paused = false;
+	private boolean autoPlay = true,showHeatMap = false,showPredictedPath = false,liveUpdatePath = false,
+			drawingBorders = false,paused = false;
+	private char isDijkstra = '1';
 	
 	
 	public PlayingScreen() 
@@ -44,11 +44,11 @@ public class PlayingScreen extends JPanel {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				FieldCell lastCell = field.get(field.size()-1);
-				int x = (e.getX())/(lastCell.getWidth());
-				int y = (e.getY())/(lastCell.getHeight());
+				int x = e.getX()/lastCell.getWidth();
+				int y = e.getY()/lastCell.getHeight();
 				
-				if(x + y*width <field.size())
-					field.get(x + y*width).setObstructionHere(true);
+				if(field.get(x , y) != null)
+					field.get(x , y).setObstructionHere(true);
 				
 			}
 		});
@@ -66,14 +66,25 @@ public class PlayingScreen extends JPanel {
 				if(x + y*width <field.size())
 					field.get(x + y*width).setObstructionHere(!field.get(x + y*width).isObstructionHere());
 				
-		}});
+		}
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				
+			}
+			 });
 	
 	}
 	public void update()
 	{
-		if(food == null)
+
+		if(food == null || food.isEaten())
 		{
 			generateNewFood();
+		}
+		if(liveUpdatePath)
+		{
+			treeData = new Mapper(field,food,snake.getHead(),isDijkstra);
 		}
 	if(!paused)
 	{
@@ -109,7 +120,7 @@ public class PlayingScreen extends JPanel {
 		repaint();
 		
 	}
-	private Tree treeData;
+	private Mapper treeData;
 	private void generateNewFood()
 	{
 
@@ -118,14 +129,14 @@ public class PlayingScreen extends JPanel {
 			Point cellLocation = cell.getCellLocation();
 			field.setSnakeHere(cell,snake.isOnTile(cellLocation));
 		}
-		treeData = new Tree(field,null,snake.getHead(),isDijkstra?'d':'r');
+		treeData = new Mapper(field,null,snake.getHead(),isDijkstra);
 		Random rand = new Random();
 		int nextPossibleSpace = rand.nextInt(width*width-1);
 		boolean run = true;
 		while(run)
 		{
 			nextPossibleSpace++;
-			if(nextPossibleSpace == field.size()-1)
+			if(nextPossibleSpace >= field.size()-1)
 				nextPossibleSpace = 0;
 			if(!field.get(nextPossibleSpace).isSnakeHere()) 
 				run = false;
@@ -139,8 +150,8 @@ public class PlayingScreen extends JPanel {
 			if(cell.equals(food))
 				cell.setFoodHere(true);
 		}
-		if(!liveUpdatePath)
-			treeData = new Tree(field,food,snake.getHead(),isDijkstra?'d':'r');
+		//if(!liveUpdatePath)
+			treeData = new Mapper(field,food,snake.getHead(),isDijkstra);
 		
 		repaint();
 	}
@@ -204,10 +215,6 @@ public class PlayingScreen extends JPanel {
 			g.drawString("Paused", this.getWidth()/2-30, this.getHeight()/2);
 		}
 
-		if(liveUpdatePath)
-		{
-			treeData = new Tree(field,food,snake.getHead(),isDijkstra?'d':'r');
-		}
 	}
 	
 	public void resetGame()
@@ -279,11 +286,12 @@ public class PlayingScreen extends JPanel {
 	public void setLiveUpdatePath(boolean liveUpdatePath) {
 		this.liveUpdatePath = liveUpdatePath;
 	}
-	public boolean isDijkstra() {
+	public char isDijkstra() {
 		return isDijkstra;
 	}
-	public void setDijkstra(boolean isDijkstra) {
-		this.isDijkstra = isDijkstra;
+	public void setDijkstra(char val) {
+		isDijkstra = val;
+		treeData = new Mapper(field,food,snake.getHead(),val);
 	}
 	public boolean isDrawingBorders() {
 		return drawingBorders;
